@@ -1,5 +1,11 @@
 ﻿venv/
 __pycache__/
+*.pyc
+*.pyo
+.env
 service_account.json
 service_account.json.json
 chat_history.json
+chat_logs.csv
+leads_backup.csv
+db/
