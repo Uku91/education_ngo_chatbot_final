@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>HopeEducation Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:system-ui;background:#f1f5f9;margin:0;padding:20px}
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+h1{margin:0 0 20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left}
+th{background:#f8fafc}
+.badge{padding:4px 8px;border-radius:12px;font-size:11px;background:#dcfce7;color:#166534}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi div{background:white;padding:16px;border-radius:12px}
+</style>
+</head><body>
+<h1>HopeEducation Admin Dashboard</h1>
+<div class="kpi">
+<div><strong id="totalChats">0</strong><br>Chats Today</div>
+<div><strong id="volCount">0</strong><br>Volunteer Leads</div>
+<div><strong id="donorCount">0</strong><br>Donor Leads</div>
+<div><strong id="helpCount">0</strong><br>Help Requests</div>
+</div>
+
+<div class="card">
+<h3>Recent Chats</h3>
+<table id="chatTable"><thead><tr><th>Time</th><th>Session</th><th>Question</th><th>Answer</th></tr></thead><tbody></tbody></table>
+<button onclick="loadChats()">Refresh</button>
+</div>
+
+<div class="card">
+<h3>Quick Actions</h3>
+<p>Google Sheet: <a href="#" id="sheetLink">Open HopeEducation Leads Sheet</a></p>
+<ul>
+<li>To update knowledge: Edit <code>ngo_knowledge.txt</code> and restart server</li>
+<li>Unanswered questions appear here - add them to knowledge base</li>
+<li>Export leads: File > Download in Google Sheets</li>
+</ul>
+</div>
+
+<script>
+async function loadChats(){
+  try{
+    const res = await fetch('/api/history');
+    const data = await res.json();
+    document.getElementById('totalChats').textContent = data.length;
+    const tbody = document.querySelector('#chatTable tbody');
+    tbody.innerHTML = '';
+    data.reverse().slice(0,50).forEach(row=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${new Date(row.time).toLocaleString()}</td><td>${row.session}</td><td>${row.q}</td><td>${row.a.substring(0,120)}...</td>`;
+      tbody.appendChild(tr);
+    });
+    // count leads
+    const vols = data.filter(d=>d.q.includes('VOLUNTEER')).length;
+    document.getElementById('volCount').textContent = vols;
+  }catch(e){ console.log(e); }
+}
+loadChats();
+setInterval(loadChats, 5000);
+</script>
+</body></html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HopeEducation NGO - Demo Site</title>
+<style>
+body{font-family:Inter,system-ui,sans-serif;margin:0;background:#f8fafc;color:#1e293b}
+.hero{background:#283c6b;color:white;padding:60px 20px;text-align:center}
+.hero h1{font-size:42px;margin:0 0 10px}
+.hero p{opacity:.8;max-width:600px;margin:0 auto}
+.content{max-width:900px;margin:40px auto;padding:0 20px}
+.btn{background:#16a34a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block}
+/* Chat Widget Styles */
+#hl-chat-bubble{position:fixed;bottom:24px;right:24px;width:60px;height:60px;background:#16a34a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:28px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:9999}
+#hl-chat-window{position:fixed;bottom:100px;right:24px;width:380px;max-width:calc(100vw - 32px);height:520px;background:white;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.2);display:none;flex-direction:column;overflow:hidden;z-index:9999;font-family:Inter,system-ui,sans-serif}
+#hl-chat-header{background:#4a5c86;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center}
+#hl-chat-header h4{margin:0;font-size:15px}
+#hl-chat-header small{opacity:.7;display:block;font-weight:400}
+#hl-chat-close{background:none;border:none;color:white;font-size:20px;cursor:pointer}
+#hl-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:#f8fafc}
+.msg{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.4}
+.msg.bot{background:white;border:1px solid #e2e8f0;align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:#16a34a;color:white;align-self:flex-end;border-bottom-right-radius:4px}
+#hl-input-area{padding:12px;border-top:1px solid #e2e8f0;display:flex;gap:8px;background:white}
+#hl-input{flex:1;border:1px solid #e2e8f0;border-radius:24px;padding:10px 14px;outline:none;font-size:14px}
+#hl-send{background:#16a34a;border:none;color:white;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px}
+.quick-replies{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.qr{border:1px solid #16a34a;color:#15a349;background:white;border-radius:20px;padding:6px 10px;font-size:12px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>HopeEducation Foundation</h1>
+  <p>Ensuring every child in Abuja has access to quality basic education. Founded 2020.</p>
+  <br><a class="btn" href="#">Donate Now</a>
+</div>
+<div class="content">
+  <h2>Our Programs</h2>
+  <p>Back-to-School Scholarship, Girls-Education Initiative, Community Learning Hubs in Lugbe, Mpape, adn Jikwoyi.</p>
+  <p><strong>Try the chatbot at bottom-right → Ask: "How can my child get scholarship?"</strong></p>
+</div>
+
+<!-- CHATBOT WIDGET -->
+<div id="hl-chat-bubble">💬</div>
+<div id="hl-chat-window">
+  <div id="hl-chat-header">
+    <div><h4>HopeEducation Assistant <small>Online • Replies instantly</small></h4></div>
+    <button id="hl-chat-close">×</button>
+  </div>
+  <div id="hl-messages">
+    <div class="msg bot">Hello! I'm HopeEducation's assistant 👋 How can I help you today? Are you looking to get help for a child, volunteer, or donate?</div>
+    <div class="quick-replies">
+      <button class="qr" onclick="sendQuick('How can my child get scholarship?')">Get Scholarship</button>
+      <button class="qr" onclick="sendQuick('How to volunteer?')">Volunteer</button>
+      <button class="qr" onclick="sendQuick('How to donate?')">Donate</button>
+    </div>
+  </div>
+  <div id="hl-input-area">
+    <input id="hl-input" placeholder="Type your question..." />
+    <button id="hl-send">➤</button>
+  </div>
+</div>
+
+<script>
+const bubble = document.getElementById('hl-chat-bubble');
+const win = document.getElementById('hl-chat-window');
+const closeBtn = document.getElementById('hl-chat-close');
+const messages = document.getElementById('hl-messages');
+const input = document.getElementById('hl-input');
+const sendBtn = document.getElementById('hl-send');
+
+// Toggle
+bubble.onclick = () => { win.style.display = win.style.display==='flex' ? 'none' : 'flex'; };
+closeBtn.onclick = () => win.style.display='none';
+
+function addMsg(text, who){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// For demo - works without backend using knowledge base keywords
+// Replace this function with real API call when backend is ready
+async function getAnswer(question){
+  const q = question.toLowerCase();
+  
+  // Simple rule-based fallback (RAG will replace this)
+  if(q.includes('scholarship') || q.includes('help') || q.includes('child')){
+    return "Our Back-to-School Scholarship covers school fees, uniform, books for ages 6-15 in Bwari, Kuje, Kwali, AMAC. Eligibility: family income < N50k/month. Application: June 1 - July 31 yearly. Bring birth cert, passport photo, proof of residence to Suite 12, Area 11, Garki or call 0803 123 4567. We don't give cash, we pay directly to school.";
+  }
+  if(q.includes('volunteer')){
+    return "We need Tutors (Maths/English), Mentors, Fundraisers. Requirement: 18+, 4hrs/week for 3 months. Apply at www.hopeeducation.ng/volunteer or email volunteer@hopelearn.ng with CV. Certificate after 3 months!";
+  }
+  if(q.includes('donate') || q.includes('sponsor')){
+    return "Donate via: GTBank 0123456789 (HopeEducation Foundation) or online at www.hopeeducation.ng/donate. In-kind (books, bags, pads) drop at Garki office Monday-Friday 9am-4pm. To sponsor a child: N150k/year - email sponsor@hopeeducation.ng. We issue receipts.";
+  }
+  if(q.includes('where') || q.includes('location') || q.includes('address')){
+    return "We are at Suite 13, 3nd Floor, Emeka Anya Street, Area 10, Garki, Abuja. Open Monday-Friday 9am-4pm. Call +234 803 123 4567. Currently only in FCT Abuja.";
+  }
+  if(q.includes('girl')){
+    return "Girls-Education Initiative: 100 girls yearly JSS1-JSS3 - mentorship, sanitary pads, tutoring in Maths/English. Centers in Garki, Lugbe, Kubwa.";
+  }
+  return "Thanks for asking! For HopeEducation Foundation, we support children 6-15 with free scholarships, learning hubs (Lugbe, Mpape, Jikwoyi) Monday-Thursday 3:30-5:30pm, and girls program. Could you tell me if you need help, want to volunteer, or donate? Or call 0803 123 4567.";
+}
+
+// Real backend integration: Uncomment this when your FastAPI is live
+
+async function getAnswer(question){
+  const res = await fetch('http://127.0.0.1:8000/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({message: question})
+  });
+  const data = await res.json();
+  return data.answer;
+}
+
+
+async function handleSend(){
+  const text = input.value.trim();
+  if(!text) return;
+  addMsg(text, 'user');
+  input.value = '';
+  const typing = document.createElement('div');
+  typing.className='msg bot'; typing.textContent='Typing...'; typing.id='typing';
+  messages.appendChild(typing);
+  const answer = await getAnswer(text);
+  document.getElementById('typing')?.remove();
+  addMsg(answer, 'bot');
+}
+
+sendBtn.onclick = handleSend;
+input.addEventListener('keydown', e => { if(e.key==='Enter') handleSend(); });
+
+function sendQuick(text){
+  input.value = text;
+  handleSend();
+}
+
+// After collecting details via chat
+fetch('http://127.0.0.1:8000/lead/volunteer', {
+  method:'POST', headers:{'Content-Type':'application/json'},
+  body: JSON.stringify({name, phone, email, skill, availability})
+})
+</script>
+</body>
+</html>
