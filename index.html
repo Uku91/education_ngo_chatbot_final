@@ -85,7 +85,14 @@ function addMsg(text, who){
 // For demo - works without backend using knowledge base keywords
 // Replace this function with real API call when backend is ready
 async function getAnswer(question){
-  const q = question.toLowerCase();
+  const res = await fetch('https://hopeeducation-chatbot.onrender.com/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({message: question, session_id: "web_user"})
+  });
+  const data = await res.json();
+  return data.answer;
+}
   
   // Simple rule-based fallback (RAG will replace this)
   if(q.includes('scholarship') || q.includes('help') || q.includes('child')){
@@ -104,7 +111,7 @@ async function getAnswer(question){
     return "Girls-Education Initiative: 100 girls yearly JSS1-JSS3 - mentorship, sanitary pads, tutoring in Maths/English. Centers in Garki, Lugbe, Kubwa.";
   }
   return "Thanks for asking! For HopeEducation Foundation, we support children 6-15 with free scholarships, learning hubs (Lugbe, Mpape, Jikwoyi) Monday-Thursday 3:30-5:30pm, and girls program. Could you tell me if you need help, want to volunteer, or donate? Or call 0803 123 4567.";
-}
+
 
 // Real backend integration: Uncomment this when your FastAPI is live
 
